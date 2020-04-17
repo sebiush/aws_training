@@ -32,7 +32,6 @@ resource "aws_eip" "nat_gateway_ip" {
 }
 
 resource "aws_nat_gateway" "nat_gateway" {
-  vpc_id        = aws_vpc.vpc.id
   allocation_id = aws_eip.nat_gateway_ip.id
   subnet_id     = module.public_subnet.subnet_id
 
