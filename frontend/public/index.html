@@ -1,0 +1,54 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="styles.css">
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script>
+            const produce = () => {
+                console.log('produce');
+
+                axios
+                    .post('http://localhost:3001/api/produce')
+                    .then(getStock)
+                    .then(setStockValue)
+                    .catch(console.log);
+            };
+
+            const consume = () => {
+                console.log('consume');
+
+                axios
+                    .post('http://localhost:3002/api/consume')
+                    .then(getStock)
+                    .then(setStockValue)
+                    .catch(console.log);
+            };
+
+            const getStock = () => {
+                console.log('getStock');
+
+                return axios.get('http://localhost:3003/api/stock');
+            };
+
+            const setStockValue = (response) => {
+                console.log(response.data.stock);
+                document.getElementById('stock').value = response.data.stock;
+            }
+        </script>
+    </head>
+    <body>
+        <div class="row">
+            <div class="column">
+                <p>PRODUCER</p>
+                <span><button onclick="produce()">produce</button></span>
+            </div>
+            <div class="column">
+                <p>STOCK</p>
+                <span><input type="number" disabled id="stock" /></span>
+            </div>
+            <div class="column">
+                <p>CONSUMER</p>
+                <span><button onclick="consume()">consume</button></span>
+            </div>
+        </div>
+    </body>
+</html>

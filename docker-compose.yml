@@ -1,0 +1,25 @@
+version: "3.7"
+services:
+  frontend:
+    image: docker.pkg.github.com/mpetla/aws_training/frontend:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+
+  producer:
+    image: docker.pkg.github.com/mpetla/aws_training/producer:latest
+    build:
+      context: ./producer
+      dockerfile: Dockerfile
+
+  consumer:
+    image: docker.pkg.github.com/mpetla/aws_training/consumer:latest
+    build:
+      context: ./consumer
+      dockerfile: Dockerfile
+
+  stock:
+    image: docker.pkg.github.com/mpetla/aws_training/stock:latest
+    build:
+      context: ./stock
+      dockerfile: Dockerfile
