@@ -1,3 +1,7 @@
 node_modules
 .idea
 .terraform
+*tfstate*
+plan
+aws.cer
+aws_configure.sh

@@ -3,11 +3,13 @@
         <link rel="stylesheet" href="styles.css">
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
         <script>
+            const api_host = 'http://test-436866578.us-east-1.elb.amazonaws.com'
+
             const produce = () => {
                 console.log('produce');
 
                 axios
-                    .post('http://localhost:3001/api/produce')
+                    .post(`${api_host}/api/produce`)
                     .then(getStock)
                     .then(setStockValue)
                     .catch(console.log);
@@ -17,7 +19,7 @@
                 console.log('consume');
 
                 axios
-                    .post('http://localhost:3002/api/consume')
+                    .post(`${api_host}/api/consume`)
                     .then(getStock)
                     .then(setStockValue)
                     .catch(console.log);
@@ -26,7 +28,7 @@
             const getStock = () => {
                 console.log('getStock');
 
-                return axios.get('http://localhost:3003/api/stock');
+                return axios.get(`${api_host}/api/stock`);
             };
 
             const setStockValue = (response) => {

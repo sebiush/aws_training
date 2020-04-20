@@ -5,12 +5,13 @@ provider "aws" {
 
 locals {
   tags = {
-    Name = "main"
+    Id = "training"
+    Name = "training"
   }
 }
 
 resource "aws_vpc" "vpc" {
-  cidr_block           = "10.0.0.0/27"
+  cidr_block           = "10.0.0.0/26"
   enable_dns_hostnames = true
   enable_dns_support   = false
   instance_tenancy     = "default"
@@ -25,8 +26,7 @@ resource "aws_internet_gateway" "internet_gateway" {
 }
 
 resource "aws_eip" "nat_gateway_ip" {
-  vpc                       = true
-  associate_with_private_ip = "10.0.0.10"
+  vpc = true
 
   tags = local.tags
 }
@@ -48,7 +48,7 @@ module "public_subnet" {
   subnet_cidr_block              = "10.0.0.0/28"
   subnet_map_public_ip_on_launch = true
 
-  tags = local.tags
+  tags = merge(local.tags, { Name = "training public" })
 }
 
 //private subnet
@@ -61,5 +61,5 @@ module "private_subnet" {
   subnet_cidr_block              = "10.0.0.16/28"
   subnet_map_public_ip_on_launch = false
 
-  tags = local.tags
+  tags = merge(local.tags, { Name = "training private" })
 }
