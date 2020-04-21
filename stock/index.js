@@ -7,12 +7,10 @@ var stock = 0;
 
 app.get('/api/stock', (req, res, next) => {
   console.log('stock');
-  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   res.send({ stock });
 });
 
-app.post('/api/consume', (req, res, next) => {
+app.post('/api/stock/consume', (req, res, next) => {
   console.log('consume');
   if (stock > 0) {
     stock--;
@@ -22,7 +20,7 @@ app.post('/api/consume', (req, res, next) => {
   }
 });
 
-app.post('/api/produce', (req, res, next) => {
+app.post('/api/stock/produce', (req, res, next) => {
   console.log('produce');
   stock++;
   res.send('produced');
