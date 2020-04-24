@@ -467,7 +467,7 @@ resource "aws_ecs_task_definition" "producer_task_definition" {
     "volumesFrom": [],
     "environment": [
       {
-        "name": "STOCK_API",
+        "name": "STOCK_HOST",
         "value": "http://stock.training:3003"
       }
     ]
@@ -498,6 +498,97 @@ resource "aws_ecs_service" "producer_service" {
 
   service_registries {
     registry_arn = aws_service_discovery_service.producer_discovery_service.arn
+  }
+}
+
+//consumer
+resource "aws_service_discovery_service" "consumer_discovery_service" {
+  name = "consumer"
+
+  dns_config {
+    namespace_id = aws_service_discovery_private_dns_namespace.service_discovery_dns.id
+
+    dns_records {
+      ttl  = 60
+      type = "A"
+    }
+  }
+
+  health_check_custom_config {
+    failure_threshold = 1
+  }
+}
+
+resource "aws_ecs_task_definition" "consumer_task_definition" {
+  family                   = "consumer"
+  cpu                      = 1024
+  memory                   = 2048
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  task_role_arn            = aws_iam_role.ecs_task_execution_role.arn
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  tags                     = local.tags
+
+  container_definitions    = <<TASK_DEFINITION
+[
+  {
+    "name": "consumer",
+    "image": "docker.pkg.github.com/mpetla/aws_training/consumer:latest",
+    "portMappings": [
+      {
+        "containerPort": 3002,
+        "protocol": "tcp",
+        "hostPort": 3002
+      }
+    ],
+    "repositoryCredentials": {
+      "credentialsParameter": "${aws_secretsmanager_secret.artifactory_secret.arn}"
+    },
+    "essential": true,
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${aws_cloudwatch_log_group.log_group.id}",
+        "awslogs-region": "${local.region}",
+        "awslogs-stream-prefix": "consumer"
+      }
+    },
+    "cpu": 1,
+    "mountPoints": [],
+    "volumesFrom": [],
+    "environment": [
+      {
+        "name": "STOCK_HOST",
+        "value": "http://stock.training:3003"
+      }
+    ]
+  }
+]
+  TASK_DEFINITION
+}
+
+resource "aws_ecs_service" "consumer_service" {
+  name                               = "consumer"
+  cluster                            = aws_ecs_cluster.cluster.arn
+  task_definition                    = aws_ecs_task_definition.consumer_task_definition.arn
+  launch_type                        = "FARGATE"
+  platform_version                   = "LATEST"
+  desired_count                      = 1
+  scheduling_strategy                = "REPLICA"
+
+  network_configuration {
+    subnets = [
+      aws_subnet.private_subnet_az1a.id,
+      aws_subnet.private_subnet_az1b.id
+    ]
+    security_groups = [
+      aws_security_group.cluster_security_group.id
+    ]
+    assign_public_ip = false
+  }
+
+  service_registries {
+    registry_arn = aws_service_discovery_service.consumer_discovery_service.arn
   }
 }
 
@@ -556,12 +647,7 @@ resource "aws_ecs_task_definition" "stock_task_definition" {
     "cpu": 1,
     "mountPoints": [],
     "volumesFrom": [],
-    "environment": [
-      {
-        "name": "STOCK_API",
-        "value": "http://stock.training:3003"
-      }
-    ]
+    "environment": []
   }
 ]
   TASK_DEFINITION
@@ -588,6 +674,6 @@ resource "aws_ecs_service" "stock_service" {
   }
 
   service_registries {
-    registry_arn = aws_service_discovery_service.producer_discovery_service.arn
+    registry_arn = aws_service_discovery_service.stock_discovery_service.arn
   }
 }
