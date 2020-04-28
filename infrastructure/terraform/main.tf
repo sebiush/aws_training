@@ -380,13 +380,13 @@ resource "aws_ecs_task_definition" "frontend_task_definition" {
 resource "aws_ecs_service" "frontend_service" {
   depends_on = [aws_alb_listener.listener]
 
-  name                               = "frontend"
-  cluster                            = aws_ecs_cluster.cluster.arn
-  task_definition                    = aws_ecs_task_definition.frontend_task_definition.arn
-  launch_type                        = "FARGATE"
-  platform_version                   = "LATEST"
-  desired_count                      = 1
-  scheduling_strategy                = "REPLICA"
+  name                = "frontend"
+  cluster             = aws_ecs_cluster.cluster.arn
+  task_definition     = aws_ecs_task_definition.frontend_task_definition.arn
+  launch_type         = "FARGATE"
+  platform_version    = "LATEST"
+  desired_count       = 1
+  scheduling_strategy = "REPLICA"
 
   network_configuration {
     subnets = [
@@ -477,13 +477,13 @@ resource "aws_ecs_task_definition" "producer_task_definition" {
 }
 
 resource "aws_ecs_service" "producer_service" {
-  name                               = "producer"
-  cluster                            = aws_ecs_cluster.cluster.arn
-  task_definition                    = aws_ecs_task_definition.producer_task_definition.arn
-  launch_type                        = "FARGATE"
-  platform_version                   = "LATEST"
-  desired_count                      = 1
-  scheduling_strategy                = "REPLICA"
+  name                = "producer"
+  cluster             = aws_ecs_cluster.cluster.arn
+  task_definition     = aws_ecs_task_definition.producer_task_definition.arn
+  launch_type         = "FARGATE"
+  platform_version    = "LATEST"
+  desired_count       = 1
+  scheduling_strategy = "REPLICA"
 
   network_configuration {
     subnets = [
@@ -568,13 +568,13 @@ resource "aws_ecs_task_definition" "consumer_task_definition" {
 }
 
 resource "aws_ecs_service" "consumer_service" {
-  name                               = "consumer"
-  cluster                            = aws_ecs_cluster.cluster.arn
-  task_definition                    = aws_ecs_task_definition.consumer_task_definition.arn
-  launch_type                        = "FARGATE"
-  platform_version                   = "LATEST"
-  desired_count                      = 1
-  scheduling_strategy                = "REPLICA"
+  name                = "consumer"
+  cluster             = aws_ecs_cluster.cluster.arn
+  task_definition     = aws_ecs_task_definition.consumer_task_definition.arn
+  launch_type         = "FARGATE"
+  platform_version    = "LATEST"
+  desired_count       = 1
+  scheduling_strategy = "REPLICA"
 
   network_configuration {
     subnets = [
@@ -647,20 +647,25 @@ resource "aws_ecs_task_definition" "stock_task_definition" {
     "cpu": 1,
     "mountPoints": [],
     "volumesFrom": [],
-    "environment": []
+    "environment": [
+      {
+        "name": "MODE",
+        "value": "aws"
+      }
+    ]
   }
 ]
   TASK_DEFINITION
 }
 
 resource "aws_ecs_service" "stock_service" {
-  name                               = "stock"
-  cluster                            = aws_ecs_cluster.cluster.arn
-  task_definition                    = aws_ecs_task_definition.stock_task_definition.arn
-  launch_type                        = "FARGATE"
-  platform_version                   = "LATEST"
-  desired_count                      = 1
-  scheduling_strategy                = "REPLICA"
+  name                = "stock"
+  cluster             = aws_ecs_cluster.cluster.arn
+  task_definition     = aws_ecs_task_definition.stock_task_definition.arn
+  launch_type         = "FARGATE"
+  platform_version    = "LATEST"
+  desired_count       = 1
+  scheduling_strategy = "REPLICA"
 
   network_configuration {
     subnets = [
@@ -676,4 +681,25 @@ resource "aws_ecs_service" "stock_service" {
   service_registries {
     registry_arn = aws_service_discovery_service.stock_discovery_service.arn
   }
+}
+
+//dynamodb
+//table
+resource "aws_dynamodb_table" "dynamodb_table" {
+  name           = "training"
+  billing_mode   = "PAY_PER_REQUEST"
+  hash_key       = "stock"
+
+  attribute {
+    name = "stock"
+    type = "S"
+  }
+
+  tags = local.tags
+}
+
+//IAM
+resource "aws_iam_role_policy_attachment" "ecs_execution_role_dynamodb" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+  role       = aws_iam_role.ecs_task_execution_role.name
 }
