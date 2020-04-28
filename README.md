@@ -19,6 +19,23 @@ https://docs.docker.com/docker-for-mac/install/
 - create aws_configure.sh in main folder
 
 #!/usr/bin/env bash
-export AWS_ACCESS_KEY_ID=
-export AWS_SECRET_ACCESS_KEY=
-export AWS_DEFAULT_REGION=
+export AWS_ACCESS_KEY_ID=user access key id
+export AWS_SECRET_ACCESS_KEY=user secret access key
+export AWS_DEFAULT_REGION=aws region
+
+- prepare github account
+  - create if you have not one
+  - create personal acces token
+    https://github.com/settings/tokens/new
+    name docker
+    check:
+     write:packages
+     read:packages
+     delete:packages
+    write token to file, for example ~/TOKEN.txt (if it is different - update docker_build.sh script)
+
+- update scripts
+  docker_build.sh
+  aws_configure.sh
+  with proper values
+    
