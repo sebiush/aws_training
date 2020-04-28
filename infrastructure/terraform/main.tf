@@ -3,9 +3,9 @@ locals {
     Id = "training"
     Name = "training"
   }
-  region = "eu-central-1"
-  az1a   = "eu-central-1a"
-  az1b   = "eu-central-1b"
+  region = "eu-west-1"
+  az1a   = "eu-west-1a"
+  az1b   = "eu-west-1b"
 }
 
 provider "aws" {
