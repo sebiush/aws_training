@@ -55,7 +55,7 @@ Compute and containers:
 2) Review ECS, EKS
 
 Infrastructure as code
-1) Review console, cli, sdk
+1) Review console, CLI, SDK
 2) Review CloudFormation, CDK
 3) Review Terraform
 
