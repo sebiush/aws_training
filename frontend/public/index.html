@@ -33,6 +33,8 @@
                 console.log(response.data.stock);
                 document.getElementById('stock').value = response.data.stock;
             }
+
+            getStock().then(setStockValue);
         </script>
     </head>
     <body>
