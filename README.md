@@ -1,3 +1,9 @@
+### NOTES:
+
+https://www.youtube.com/watch?v=hiKPPy584Mg 
+ 
+
+
 ### Prerequisites
 
 - create AWS account
